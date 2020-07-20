@@ -1,13 +1,27 @@
 import json 
+import os
 import random as rdm
+if not os.path.exists('./data.json'):
+    t = {}
+    with open('./data.json', 'w') as f : 
+        json.dump(t,f)
 
 with open('data.json') as d :
     data = json.load(d)
 
+if 'English' not in data :
+    data['English'] = {} 
+if 'Chinese' not in data :
+    data['Chinese'] = {} 
+if 'Radicals' not in data :
+    data['Radicals'] = {}     
 if 'Elements' not in data :
     data['Elements'] = {} 
  
+#TODO - there could be multiple character with same english word, perhaps eventually want to take that into account 
+#TODO - make sure inputs are in right format.  
 #TODO - test what happens if json doesn't exist
+#TODO - add in ability for multiple english meanings
 #TODO - add save feature // temp backup so you can undo changes
 #TODO - if you add an element that has sub elements, perhaps have it ask if that is the subelement? 
 #TODO - add specific test types (for always english question or always certain type of answer, etc)
@@ -16,7 +30,6 @@ if 'Elements' not in data :
 #TODO - change radical to subchar? primitive maybe? not all do I remember with radicals, maybe elements would be best 
 #TODO - ability to lookup multiple terms at once (such as if you want to compare words), maybe create list of similar words for each word to help compare later? Might be useful if you add a gui later
 
-q = 1
 i = 0
 while i<100  :
     valid1 = ['1','2','3','4'] 
@@ -28,20 +41,41 @@ while i<100  :
     input1 = int(input1)
     print('Type exit() at any time to go back')
     if input1 == 1 : 
-        Ekeys = data['English'].keys() 
-        Ckeys = data['Chinese'].keys() 
+        score = 0
+        Ekeys = list(data['English'].keys()) 
+        Ckeys = list(data['Chinese'].keys()) 
         if len(Ekeys) > 0 : 
+            print(Ekeys[0])
             j = 0
             while j < 100 : 
                 r = rdm.randint(1,2)
+                r2 = rdm.randint(0,len(Ekeys)-1) 
                 if r == 1 :
-                    r2 = rdm.randint(0,len(Ekeys))
-                    print('Type the radical or character meanings of the following word : ' + data['English'][r2] )
+                    temp = data['English'][Ekeys[r2]]
+                    print('Type the radical or character meanings of the following word : ' + temp )
                     input2 = input() 
+                    if input2 == 'exit()' :
+                        exit()
+                    if input2 == data['Chinese'][temp] :
+                        print('correct, +1 score')
+                        score += 1
+                        print(temp,Ekeys[r2],data['Radicals'][temp] )  
+                    else :
+                        print('correct answer : ' )
+                        print(temp,Ekeys[r2],data['Radicals'][temp] ) 
                 else :      
-                    r2 = rdm.randint(0,len(Ckeys))
-                    print('Type the meaning of the following character : ' + data['Chinese'][r2] )
+                    temp = data['Chinese'][Ckeys[r2]]
+                    print('Type the meaning of the following character : ' + temp )
                     input2 = input()
+                    if input2 == 'exit()' :
+                        exit()
+                    if input2 == Ckeys[r2] :
+                        print('correct, +1 score')
+                        score += 1
+                        print(Ckeys[r2],temp,data['Radicals'][Ckeys[r2]] )  
+                    else :
+                        print('correct answer : ' )
+                        print(Ckeys[r2],temp,data['Radicals'][Ckeys[r2]] ) 
                 j+= 1     
                     
     elif input1 == 2 :
@@ -71,30 +105,38 @@ while i<100  :
                 temp = input().split(',' ) 
 
                 input5.append( [k.strip() for k in temp] )   
-                print(input5)
             data['English'][input3] = input2
             data['Chinese'][input2] = input3 
             data['Radicals'][input2] = input5
-            print(data)
+            for j in input5 : 
+                for r in j :
+                    if r in data['Elements'] :
+                        data['Elements'][r].append(input2)
+                    else :
+                        data['Elements'][r] = [input2]     
             with open('data.json','w') as file :  
                 json.dump(data,file)     
     elif input1 == 3 :
         print(0)
     elif input1 == 4 : 
-        print('Enter word, character or imagery ') 
-        input2 = input()
-        if input2 in data['Chinese'] :
-            temp = data['Chinese'][input2]
-            print(temp,data['English'][temp],data['Radicals'][input2])
-        elif input2 in data['English'] or input2 in data['Elements']: 
-            if input2 in data['English'] :
-                temp = data['English'][input2]
-                print(data['Chinese'][temp],temp ,data['Radicals'][temp]) 
-            if input2 in data['Elements'] : 
-                for e in data['Elements'][input2] :
-                    print(data['Chinese'][e],data['English'][data['Chinese'][e]]  ,data['Radicals'][e]) 
-        else :
-            print('input not found in database')                  
+        while True : 
+            print('Enter word, character or imagery. back() to return to previous, exit() to quit')  
+            input2 = input()
+            if input2 == 'back()' :
+                break 
+            if input2 == 'exit()' :
+                exit()              
+            if input2 in data['Chinese'] :
+                print(input2,data['Chinese'][input2],data['Radicals'][input2])
+            elif input2 in data['English'] or input2 in data['Elements']: 
+                if input2 in data['English'] :
+                    temp = data['English'][input2]
+                    print(temp,data['Chinese'][temp],data['Radicals'][temp]) 
+                if input2 in data['Elements'] : 
+                    for e in data['Elements'][input2] :
+                        print(e,data['Chinese'][e],data['Radicals'][e]) 
+            else :
+                print('input not found in database')                  
             
 
     i += 1
