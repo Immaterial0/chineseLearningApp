@@ -19,8 +19,8 @@ if 'Elements' not in data :
     data['Elements'] = {} 
  
 #TODO - there could be multiple character with same english word, perhaps eventually want to take that into account 
+#TODO - ask at end of input if input is correct
 #TODO - make sure inputs are in right format.  
-#TODO - test what happens if json doesn't exist
 #TODO - add in ability for multiple english meanings
 #TODO - add save feature // temp backup so you can undo changes
 #TODO - if you add an element that has sub elements, perhaps have it ask if that is the subelement? 
