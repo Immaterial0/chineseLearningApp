@@ -3,13 +3,20 @@ import random as rdm
 
 with open('data.json') as d :
     data = json.load(d)
+
+if 'Elements' not in data :
+    data['Elements'] = {} 
  
-#TODO - add save feature
+#TODO - test what happens if json doesn't exist
+#TODO - add save feature // temp backup so you can undo changes
+#TODO - if you add an element that has sub elements, perhaps have it ask if that is the subelement? 
 #TODO - add specific test types (for always english question or always certain type of answer, etc)
 #TODO - allow undoing one step when inputing characters rather than going back to start
 #TODO - add exit() and back() and such by using a function to check. Maybe?    
 #TODO - change radical to subchar? primitive maybe? not all do I remember with radicals, maybe elements would be best 
+#TODO - ability to lookup multiple terms at once (such as if you want to compare words), maybe create list of similar words for each word to help compare later? Might be useful if you add a gui later
 
+q = 1
 i = 0
 while i<100  :
     valid1 = ['1','2','3','4'] 
@@ -74,7 +81,22 @@ while i<100  :
     elif input1 == 3 :
         print(0)
     elif input1 == 4 : 
-        print('Enter word, character or imagery ')      
+        print('Enter word, character or imagery ') 
+        input2 = input()
+        if input2 in data['Chinese'] :
+            temp = data['Chinese'][input2]
+            print(temp,data['English'][temp],data['Radicals'][input2])
+        elif input2 in data['English'] or input2 in data['Elements']: 
+            if input2 in data['English'] :
+                temp = data['English'][input2]
+                print(data['Chinese'][temp],temp ,data['Radicals'][temp]) 
+            if input2 in data['Elements'] : 
+                for e in data['Elements'][input2] :
+                    print(data['Chinese'][e],data['English'][data['Chinese'][e]]  ,data['Radicals'][e]) 
+        else :
+            print('input not found in database')                  
+            
+
     i += 1
 
 with open('data.json','w') as file : 
