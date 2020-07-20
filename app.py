@@ -17,8 +17,13 @@ if 'Radicals' not in data :
     data['Radicals'] = {}     
 if 'Elements' not in data :
     data['Elements'] = {} 
+
+
+def loadtsv(address) : 
+    print('Not finished yet')
+
+    return 0
  
-#TODO - there could be multiple character with same english word, perhaps eventually want to take that into account 
 #TODO - ask at end of input if input is correct
 #TODO - make sure inputs are in right format.  
 #TODO - add in ability for multiple english meanings
@@ -32,8 +37,8 @@ if 'Elements' not in data :
 
 i = 0
 while i<100  :
-    valid1 = ['1','2','3','4'] 
-    print('Test = 1, Input = 2, Update = 3, Lookup = 4')
+    valid1 = ['1','2','3','4','5'] 
+    print('Test = 1, Input = 2, Update = 3, Lookup = 4, Load from file = 5')
     input1 = input() 
     if input1 not in valid1 :
         print('Error')
@@ -137,8 +142,16 @@ while i<100  :
                         print(e,data['Chinese'][e],data['Radicals'][e]) 
             else :
                 print('input not found in database')                  
-            
-
+    elif input1 == 5 : 
+        print('Please provide file name in current folder') 
+        input2 = input()
+        if os.path.exists('./' + input2) :
+            loadtsv('./' + input2)
+            print('Table loaded')
+            break
+        else : 
+            print('No file with the given name was found')  
+ 
     i += 1
 
 with open('data.json','w') as file : 
