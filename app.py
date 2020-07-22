@@ -48,96 +48,72 @@ def loadtsv(address) :
 #TODO - add in options command to see list of options rather than listing them each time (back, exit, main, etc)
 #TODO - store list of changes made in update so you can revert
 #TODO in lookup use c r and e keys to only look up given type ? not sure this is useful actually
+#TODO add in radical tests
 
 def test() : 
     score = 0
     Ekeys = list(data['English'].keys()) 
-    Ckeys = list(data['Chinese'].keys())  
-    for x in Ekeys :
+    Ckeys = list(data['Chinese'].keys()) 
+    Ckeys2 = list(Ckeys)
+    Ekeys2 = list(Ekeys)
+    for x in Ekeys2 :
         if x in data['rme'] :
             Ekeys.remove(x)
-    for x in Ckeys :
+    for x in Ckeys2 :
         if x in data['rmc'] :
             Ckeys.remove(x)
     if len(Ekeys) > 0 : 
         prev = ''
         while True : 
             print( (Ekeys), (Ckeys))
-            temp = ''
+            print(data['rme'],data['rmc'])
             r = rdm.randint(1,2)
             if r == 1 :
-                r2 = rdm.randint(0,len(Ekeys)-1) 
-                temp = data['English'][Ekeys[r2]]
-                print('Type the radical or character meanings of the following word : ' + temp )
-                input2 =  input() 
-                if input2 == 'rm' :
-                    rm( Ekeys[r2],Ekeys,Ckeys,0) 
-                    continue                
-                if input2 == 'rmp' :
-                    rm(prev,Ekeys,Ckeys,temp)
-                    input2 = input()              
-                prev = temp 
-                if input2 == 'exit()' :
-                    exit()
-                if input2 == data['Chinese'][temp] :
-                    print('correct, +1 score')
-                    score += 1
-                    print(temp,Ekeys[r2],data['Radicals'][temp] )  
-                else :
-                    print('correct answer : ' )
-                    print(temp,Ekeys[r2],data['Radicals'][temp] ) 
+                prev,score = question(Ekeys,Ckeys,prev,'English',score)
             else :  
-                r2 = rdm.randint(0,len(Ckeys)-1) 
-                temp = data['Chinese'][Ckeys[r2]]
-                print('Type the meaning of the following character : ' + temp )
-                input2 = input() 
-                if input2 == 'rm' :
-                    rm( Ckeys[r2],Ekeys,Ckeys,0) 
-                    continue
-                if input2 == 'rmp' :
-                    rm(prev,Ekeys,Ckeys,temp)
-                    input2 = input()     
-                prev =  temp
-                if input2 == 'exit()' :
-                    exit()
-                if input2 == Ckeys[r2] :
-                    print('correct, +1 score')
-                    score += 1
-                    print(Ckeys[r2],temp,data['Radicals'][Ckeys[r2]] )  
-                else :
-                    print('correct answer : ' )
-                    print(Ckeys[r2],temp,data['Radicals'][Ckeys[r2]] ) 
+                prev,score = question(Ckeys,Ekeys,prev,'Chinese',score)
             print('rmp - remove previous from testing, rm - remove current, update() - add to update list and remove from tests')
 
 
-def question(arr,) : 
+def question(arr,arr2,prev,key,s ) : 
     r2 = rdm.randint(0,len(arr)-1) 
-    print('Type the radical or character meanings of the following word : ' + temp )
+    t = arr[r2]
+    if key == 'English' :
+        print('Type the meanings of the following character : ' + t )
+    else :
+        print('Type the character with the following meaning : ' + t)    
     input2 =  input() 
     if input2 == 'rm' :
-        rm( Ekeys[r2],Ekeys,Ckeys,0) 
-        continue                
+        rm(t,arr,arr2,0) 
+        return t,s
     if input2 == 'rmp' :
-        rm(prev,Ekeys,Ckeys,temp)
+        rm(prev,arr,arr2,t)
         input2 = input()              
-    prev = temp 
     if input2 == 'exit()' :
         exit()
-    if input2 == data['Chinese'][temp] :
-        print('correct, +1 score')
-        score += 1
-        print(temp,Ekeys[r2],data['Radicals'][temp] )  
+    if input2 == data[key][t] :
+        s += 1
+        print('correct, +1 score, score : '+str(s))
     else :
         print('correct answer : ' )
-        print(temp,Ekeys[r2],data['Radicals'][temp] ) 
+    if key == 'Chinese' : 
+        temp = t
+    else :
+        temp = data[key][t]    
+    print(temp,data['Chinese'][temp],data['Radicals'][temp] )
+    return t,s    
 
 
-def rm(pr,e,c,t) :
-    if pr in e : 
+def rm(pr,c,e,t) :
+    if pr in data['English'] : 
         data['rme'][pr] = 1
-        e.remove(pr) 
-    elif pr in c : 
+    elif pr in data['Chinese'] : 
         data['rmc'][pr] = 1
+    else : 
+        print('No key found')    
+    if pr in e : 
+        e.remove(pr) 
+    elif pr in c:
         c.remove(pr)
     if t is not 0 :
         print('entry removed from test')
