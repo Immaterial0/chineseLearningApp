@@ -50,6 +50,18 @@ def loadtsv(address) :
 #TODO in lookup use c r and e keys to only look up given type ? not sure this is useful actually
 #TODO add in radical tests
 
+def cmds(string) :
+    arr = ['ext','bk','opt','mnu']
+    if string not in arr :
+        return 0
+    if string == 'ext' :
+        exit()
+    #TODO - finish this later    
+    if string == 'opt' :
+        print('fix this later') 
+        return False  
+
+
 def test() : 
     score = 0
     Ekeys = list(data['English'].keys()) 
@@ -63,19 +75,64 @@ def test() :
         if x in data['rmc'] :
             Ckeys.remove(x)
     if len(Ekeys) > 0 : 
+        print('With replacement - Chinese to English = 1, English to Chinese = 2, Both = 3 ')
+        print('Without replacement - Chinese to English = 4, English to Chinese = 5, Both = 6 ')
+      #TODO finish adding in other options. also put in no repeat option so you can test each at least once. 
+        valid3 = ['1','2','3','4','5','6']
+        while True :
+            inputTest = input()
+            if cmds(inputTest) :
+                if inputTest == 'mnu' or inputTest == 'bk' : 
+                    return 0
+            elif inputTest in valid3 :
+                break 
         prev = ''
-        while True : 
-            print( (Ekeys), (Ckeys))
-            print(data['rme'],data['rmc'])
-            r = rdm.randint(1,2)
-            if r == 1 :
+        a = 1
+        b = 2
+        if inputTest == '5'  :  
+            while len(Ekeys) > 0  :            
                 prev,score = question(Ekeys,Ckeys,prev,'English',score)
-            else :  
+                if prev in Ekeys : Ekeys.remove(prev)
+            print('test completed')
+            return 0     
+        elif inputTest == '4' :   
+            while len(Ckeys) > 0 :            
                 prev,score = question(Ckeys,Ekeys,prev,'Chinese',score)
-            print('rmp - remove previous from testing, rm - remove current, update() - add to update list and remove from tests')
+                if prev in Ckeys : Ckeys.remove(prev)
+            print('test completed')
+            return 0     
+        elif inputTest == '6' : 
+           while a <= b :        
+                r = rdm.randint(a,b)
+                if r == 1 :
+                    if len(Ekeys) > 0 :
+                        prev,score = question(Ekeys,Ckeys,prev,'English',score)
+                        if prev in Ekeys : Ekeys.remove(prev)
+                    else :
+                        a = 2
+                else :  
+                    if len(Ckeys) > 0 :
+                        prev,score = question(Ckeys,Ekeys,prev,'Chinese',score)
+                        if prev in Ckeys : Ckeys.remove(prev)
+                    else :
+                        b = 1    
+                        
+                print('rmp - remove previous from testing, rm - remove current, update() - add to update list and remove from tests')       
+        else : 
+            if inputTest == '1' : 
+                a = 2
+            elif inputTest == '2' :
+                b = 1         
+            while True :  
+                r = rdm.randint(a,b)
+                if r == 1 :
+                    prev,score = question(Ekeys,Ckeys,prev,'English',score)
+                else :  
+                    prev,score = question(Ckeys,Ekeys,prev,'Chinese',score)
+                print('rmp - remove previous from testing, rm - remove current, update() - add to update list and remove from tests')
 
 
-def question(arr,arr2,prev,key,s ) : 
+def question(arr,arr2,prev,key,s) : 
     r2 = rdm.randint(0,len(arr)-1) 
     t = arr[r2]
     if key == 'English' :
@@ -89,7 +146,7 @@ def question(arr,arr2,prev,key,s ) :
     if input2 == 'rmp' :
         rm(prev,arr,arr2,t)
         input2 = input()              
-    if input2 == 'exit()' :
+    if input2 == 'ext' :
         exit()
     if input2 == data[key][t] :
         s += 1
@@ -147,7 +204,6 @@ def add() :
             if input5 == 'bk' :
                 break
             temp = input().split(',' ) 
-
             input5.append( [k.strip() for k in temp] )   
         data['English'][input3] = input2
         data['Chinese'][input2] = input3 
@@ -211,7 +267,6 @@ def load() :
 
 
 while True  :
-    cmds = ['exit()','back()','prev()']
     valid1 = ['1','2','3','4','5'] 
     valid2 = [1,2,3,4,5]
     print('Test = 1, Input = 2, Update = 3, Lookup = 4, Load from file = 5')
